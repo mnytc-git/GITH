@@ -1,0 +1,44 @@
+name: Database
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  clean-history:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: write  # Memberi izin untuk menghapus riwayat Actions
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Clean Commit History
+        run: |
+          git config user.name "mnytc-git"
+          git config user.email "mnytc-git@users.noreply.github.com"
+
+          TARGET_DATE="2011-08-11T10:00:00"
+
+          git checkout --orphan temp-branch
+          git add -A
+
+          GIT_COMMITTER_DATE="$TARGET_DATE" GIT_AUTHOR_DATE="$TARGET_DATE" git commit -m "Initial commit" --date="$TARGET_DATE"
+
+          git branch -D main
+          git branch -m main
+          git push -f origin main
+
+      - name: Delete All Workflow Runs
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Menghapus seluruh riwayat workflow run secara otomatis
+          for run_id in $(gh run list --repo mnytc-git/GITH --limit 100 --json databaseId -q '.[].databaseId'); do
+            gh run delete $run_id --repo mnytc-git/GITH || true
+          done
