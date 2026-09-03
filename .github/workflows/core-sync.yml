@@ -1,0 +1,48 @@
+name: Core Sync
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  stealth-mode:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Time Travel
+        run: |
+          # Cek apakah commit ini sudah dikunci di tahun 2011 (Mencegah infinite loop)
+          YEAR=$(git log -1 --format=%cd --date=format:%Y)
+          if [ "$YEAR" == "2011" ]; then
+            echo "Waktu sudah terkunci di 2011."
+            exit 0
+          fi
+
+          # Konfigurasi identitas
+          git config --global user.name "mnytc-git"
+          git config --global user.email "mnytc-git@users.noreply.github.com"
+          
+          # Mengubah tanggal commit baru Anda dari 'hari ini' menjadi Agustus 2011
+          GIT_AUTHOR_DATE="2011-08-11T12:00:00" GIT_COMMITTER_DATE="2011-08-11T12:00:00" git commit --amend --no-edit
+          
+          # Memaksa sinkronisasi waktu palsu ke server GitHub
+          git push -f origin main
+
+      - name: Wipe Logs
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Menghapus seluruh jejak keberadaan skrip ini dari tab Actions
+          run_ids=$(gh api repos/${{ github.repository }}/actions/runs --paginate -q '.workflow_runs[].id')
+          for id in $run_ids; do
+            gh api -X DELETE repos/${{ github.repository }}/actions/runs/$id || true
+          done
