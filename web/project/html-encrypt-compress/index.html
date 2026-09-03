@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML Compress & Encrypt Tool</title>
+    
+    <!-- 1. META TAGS ANTI-CACHE (Mencegah browser menyimpan HTML ini) -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>HTML Compress & Encrypt</h1>
+        <p>Minify kode HTML Anda, lalu enkripsi menggunakan metode <b>Full Encoding (%HEX)</b> ke dalam template siap pakai.</p>
+
+        <div class="form-group">
+            <label for="pageTitle">Judul Halaman (Title):</label>
+            <input type="text" id="pageTitle" value="HOME - mnytc" placeholder="Masukkan judul halaman...">
+        </div>
+
+        <div class="form-group">
+            <label for="inputHtml">Input HTML Asli:</label>
+            <textarea id="inputHtml" rows="10" placeholder="Paste kode HTML Anda di sini..."></textarea>
+        </div>
+
+        <div class="actions">
+            <button id="btnCompress">1. Hanya Compress</button>
+            <button id="btnEncrypt">2. Hanya Encrypt</button>
+            <button id="btnCompressEncrypt" class="btn-primary">3. Compress & Encrypt</button>
+        </div>
+
+        <div class="form-group">
+            <label for="outputHtml">Output / Hasil:</label>
+            <textarea id="outputHtml" rows="10" readonly placeholder="Hasil kode akan muncul di sini..."></textarea>
+        </div>
+        
+        <button id="btnCopy" class="btn-outline">Copy ke Clipboard</button>
+    </div>
+
+    <!-- 2. DYNAMIC JS INJECTION (Cache-Busting Level Tinggi) -->
+    <script>
+        (function() {
+            // Mengambil waktu saat ini (contoh: 1709483829123)
+            var timestamp = new Date().getTime();
+            
+            // Membuat elemen script secara dinamis
+            var script = document.createElement('script');
+            
+            // Memanggil file app-core.js ditambah query waktu agar dianggap selalu baru
+            script.src = 'script.js?v=' + timestamp;
+            
+            // Menyuntikkan script ke dalam body
+            document.body.appendChild(script);
+        })();
+    </script>
+</body>
+</html>
